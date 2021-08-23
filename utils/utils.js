@@ -94,15 +94,21 @@ function hexToRgbPaletteFormat(hex) {
 
 const getMeteo = async () => {
 
-    const res = await axios.get(`https://api.openweathermap.org/data/2.5/onecall?lat=48.8534&lon=2.3488&appid=${process.env.OPENWEATHERMAP_KEY}&units=metric&lang=fr&exclude=minutely,hourly`)
+    try {
+        const res = await axios.get(`https://api.openweathermap.org/data/2.5/onecall?lat=48.8534&lon=2.3488&appid=${process.env.OPENWEATHERMAP_KEY}&units=metric&lang=fr&exclude=minutely,hourly`)
 
-    const meteo = 
-    {
-        season : res.data.daily[0].feels_like.day > 18 ? "warm": "cold",
-        weather : res.data.daily[0].weather[0].main
+        const meteo = 
+        {
+            season : res.data.daily[0].feels_like.day > 18 ? "warm": "cold",
+            weather : res.data.daily[0].weather[0].main
+        }
+    
+        return meteo;
     }
-
-    return meteo;
+    catch (error) {
+        console.log(error)
+    }
+    
 }
 const getRandomColorsHex = async (arrayOfHexColors) => {
 
@@ -116,14 +122,19 @@ const getRandomColorsHex = async (arrayOfHexColors) => {
         colors.push("N")
     }
 
-    const colorsRes = await axios.post("http://colormind.io/api/", {
-        "input": colors,
-        "model": "default"
-    })
+    try{
+        const colorsRes = await axios.post("http://colormind.io/api/", {
+            "input": colors,
+            "model": "default"
+        })
+        const colorResRGB = colorsRes.data.result.map(item => rgbToHex(item[0], item[1], item[2]))
 
-    const colorResRGB = colorsRes.data.result.map(item => rgbToHex(item[0], item[1], item[2]))
+        return colorResRGB;
+    }
+    catch(error) {
+        console.log(error)
+    }
 
-    return colorResRGB;
 }
 
 
