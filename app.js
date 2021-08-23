@@ -34,11 +34,11 @@ app.use(
   })
 );
 
-// // Test to see if user is logged In before getting into any router.
-// app.use(function (req, res, next) {
-//   console.log("User in session =>", req.session.currentUser);
-//   next();
-// });
+// Test to see if user is logged In before getting into any router.
+app.use(function (req, res, next) {
+  console.log("User in session =>", req.session.currentUser);
+  next();
+});
 
 /**
  * Routes
@@ -46,6 +46,10 @@ app.use(
 
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/users", require("./routes/users"));
+app.use("/api/types", require("./routes/types"));
+app.use("/api/outfits", require("./routes/outfits"));
+app.use("/api/items", require("./routes/items"));
+app.use("/api/colors", require("./routes/colors"));
 
 // 404 Middleware
 app.use((req, res, next) => {
