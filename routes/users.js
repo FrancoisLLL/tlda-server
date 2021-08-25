@@ -48,6 +48,21 @@ router.get("/me/items", requireAuth, (req, res, next) => {
     .catch(next);
 });
 
+// (R) Read one item from user
+router.get("/me/oneItem", requireAuth, (req, res, next) => {
+  const currentUserId = req.session.currentUser._id; // We retrieve the users id from the session.
+
+  console.log("one")
+  Item.findOne({
+      user: currentUserId
+    })
+    .populate("type")
+    .then((itemDocuments) => {
+      res.status(200).json(itemDocuments);
+    })
+    .catch(next);
+});
+
 router.get("/me/outfits", requireAuth, (req, res, next) => {
   const currentUserId = req.session.currentUser._id; // We retrieve the users id from the session.
 
@@ -55,7 +70,9 @@ router.get("/me/outfits", requireAuth, (req, res, next) => {
   Outfit.find({
       user: currentUserId
     })
-    .sort({"date": -1})
+    .sort({
+      "date": -1
+    })
     .populate({
       path: "item",
       populate: {

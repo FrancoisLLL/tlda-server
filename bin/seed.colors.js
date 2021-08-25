@@ -6,7 +6,6 @@ const Color = require("../models/Color")
 const colors = [
   {color: "#282a36"},
   {color: "#44475a"},
-  {color: "#44475a"},
   {color: "#f8f8f2"},
   {color: "#6272a4"},
   {color: "#8be9fd"},

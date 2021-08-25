@@ -50,6 +50,7 @@ app.use("/api/types", require("./routes/types"));
 app.use("/api/outfits", require("./routes/outfits"));
 app.use("/api/items", require("./routes/items"));
 app.use("/api/colors", require("./routes/colors"));
+app.use("/api/meteo", require("./routes/meteo"));
 
 // 404 Middleware
 app.use((req, res, next) => {

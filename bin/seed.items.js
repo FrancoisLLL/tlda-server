@@ -22,7 +22,7 @@ async function seedItems() {
 
         const items = [];
 
-        for (let i = 0; i < 300; i++) {
+        for (let i = 0; i < 500; i++) {
             let item = {};
             const randomUserIndex = Math.floor(Math.random() * usersInDB.length);
             const randomTypeIndex = Math.floor(Math.random() * typesInDB.length);

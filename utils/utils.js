@@ -18,7 +18,10 @@ const getType = async (category, season) => {
     const types = await Type.find({
         category: category,
         season: season
-    }).select("_id");
+    }).select("_id type category season");
+
+    // console.log(types);
+
     return types;
 }
 
@@ -44,7 +47,9 @@ const getUserItems = async (user, category, season) => {
         }
     }
 
-    const items = await Item.find(filter).populate("type", "type season");
+    const items = await Item.find(filter).populate("type");
+
+    // console.log("filter", filter, "items", items)
 
     return items;
 }
@@ -77,21 +82,6 @@ function hexToRgbPaletteFormat(hex) {
         B: parseInt(result[3], 16)
     }: null;
 }
-
-// function RgbPaletteFormatToHex(RGBPal) {
-//     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-//     return result ? {
-//         R: parseInt(result[1], 16),
-//         G: parseInt(result[2], 16),
-//         B: parseInt(result[3], 16)
-//     }: null;
-// }
-
-
-
-//for meteo : sample API call 
-// https://api.openweathermap.org/data/2.5/onecall?lat=48.8534&lon=2.3488&appid=bbf5fdc21890cd10763c2d9d386ff8e0&units=metric&lang=fr
-
 const getMeteo = async () => {
 
     try {

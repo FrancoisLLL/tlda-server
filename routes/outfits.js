@@ -133,6 +133,8 @@ router.get("/generate", requireAuth, async (req, res, next) => {
         season
     } = await getMeteo();
 
+    console.log(season)
+
     const tops = await getUserItems(req.session.currentUser._id, "top", season); //We start by the top as base item for color random but could be anything
     const bottoms = await getUserItems(req.session.currentUser._id, "bottom", season);
     const shoes = await getUserItems(req.session.currentUser._id, "shoes", season);
@@ -143,14 +145,17 @@ router.get("/generate", requireAuth, async (req, res, next) => {
         res.sendStatus(500)
         return;
     }
+    // console.log(tops, bottoms, shoes)
+    const palette = await getRandomColorsHex()
 
-    const top  = getRandomItemAndColor(tops, "top", await getRandomColorsHex())
+    const top  = getRandomItemAndColor(tops, "top", palette)
+    const bottom = getRandomItemAndColor(bottoms, "bottom", palette)
+    const shoe = getRandomItemAndColor(shoes, "shoes",palette)
 
-    const bottom = getRandomItemAndColor(bottoms, "bottom", await getRandomColorsHex([top.color]))
+    console.log(top)
 
-    const shoe = getRandomItemAndColor(shoes, "shoes", await getRandomColorsHex([top.color, bottom.color]))
 
-    const finalColorPalette = await getRandomColorsHex([top.color, bottom.color, shoe.color])
+    const finalColorPalette = palette//await getRandomColorsHex([top.color, bottom.color, shoe.color])
 
     const result = {
        top,
@@ -158,12 +163,8 @@ router.get("/generate", requireAuth, async (req, res, next) => {
        shoe,
        finalColorPalette
     }
-    // (top)
-    // +(bottom) 
-    // +(oneShoes)
-    // +(finalColorPalette)
 
-    console.log(result)
+    console.log("toto", result)
     res.status(200).json(result)
 
 });
@@ -185,16 +186,19 @@ const getRandomItemAndColor = (items, category, paletteColors) => {
         return hexToRgbPaletteFormat(item.color)
     })
 
+    // console.log(itemsInPaletteColorsFormat, colorToSearch)
+
     const closestColorFoundRGB = colorDiff.closest(hexToRgbPaletteFormat(colorToSearch), itemsInPaletteColorsFormat)
+
     const closestColorFoundHex = rgbToHex(closestColorFoundRGB.R, closestColorFoundRGB.G, closestColorFoundRGB.B);
 
     const filteredItems = items.filter((item) => item.color === closestColorFoundHex)
     const randomIndex = Math.floor(Math.random() * filteredItems.length);
     const item = filteredItems[randomIndex];
 
-    console.log("item :", category, "color palette: ", paletteColors, "closest color: ", closestColorFoundHex)
+    // console.log("item :", category, "color palette: ", paletteColors, "closest color: ", closestColorFoundHex)
 
-    console.log(item)
+    // console.log(item)
 
     return item
 
