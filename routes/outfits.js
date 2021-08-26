@@ -20,8 +20,14 @@ const {
 const router = express.Router();
 
 router.get("/:id/details", requireAuth, validateId("id"), (req, res, next) => {
+    console.log(req.params.id)
     Outfit.findById(req.params.id)
-        .populate("item")
+        .populate({
+            path: "item",
+            populate: {
+                path: "type"
+            }
+        })
         .then((outfitDocument) => {
             if (!outfitDocument) {
                 return res.status(404).json({
@@ -68,6 +74,8 @@ router.patch("/:id", requireAuth, validateId("id"), fileUploader.single("image")
         ...req.body
     };
 
+    console.log(req.body)
+
     Outfit.findById(req.params.id)
         .then((outfitDocument) => {
             if (!outfitDocument)
@@ -81,9 +89,10 @@ router.patch("/:id", requireAuth, validateId("id"), fileUploader.single("image")
                         message: "You are not allowed to update this document"
                     });
             }
+            console.log(req.file)
 
             if (req.file) {
-                outfit.image = req.file.secure_url;
+                outfit.image = req.file.path;
             }
 
             Outfit.findByIdAndUpdate(req.params.id, outfit, {
@@ -135,16 +144,16 @@ router.get("/generate", requireAuth, async (req, res, next) => {
         // const {
         //     season
         // } = await getMeteo();
-        const season ="warm"
+        const season = "warm"
         // console.log(season)
-    
-        const tops = await  getUserItems(req.session.currentUser._id, "top", season); //We start by the top as base item for color random but could be anything
+
+        const tops = await getUserItems(req.session.currentUser._id, "top", season); //We start by the top as base item for color random but could be anything
         // console.log(tops)
 
         const bottoms = await getUserItems(req.session.currentUser._id, "bottom", season);
         // console.log(bottoms)
 
-        const shoes = await  getUserItems(req.session.currentUser._id, "shoes", season);
+        const shoes = await getUserItems(req.session.currentUser._id, "shoes", season);
 
         // console.log(shoes)
         // let randomIndex = Math.floor(Math.random() * tops.length);
@@ -222,7 +231,7 @@ const getRandomItemAndColor = (items, category, paletteColors) => {
     //     return (item.color)
     // }))
 
-    const filteredItems = items.filter((item) => item.color.toLowerCase() === closestColorFoundHex.toLowerCase() )
+    const filteredItems = items.filter((item) => item.color.toLowerCase() === closestColorFoundHex.toLowerCase())
 
     const randomIndex = Math.floor(Math.random() * filteredItems.length);
     const item = filteredItems[randomIndex];
