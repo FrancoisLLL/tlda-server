@@ -93,7 +93,7 @@ const types = [{
     },
     {
         type: "Cardigan",
-        season: ["warm"],
+        season: ["warm","cold"],
         ecoCost: 7000,
         category: "top",
         image: "https://res.cloudinary.com/francoiscloudinary/image/upload/v1629720974/tlda/icons/050-cardigan_oetqwf.svg"

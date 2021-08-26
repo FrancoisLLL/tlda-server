@@ -13,7 +13,7 @@ const outfitSchema = new Schema({
         required: true
     },
     image: String,
-    date: Date
+    date: {type: Date, default: Date.now}
 }, {
     timestamps: true
 });

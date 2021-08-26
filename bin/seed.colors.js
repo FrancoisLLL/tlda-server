@@ -37,7 +37,14 @@ const colors = [
   {color: "#e6c5ed"},
   {color: "#ff5000"},
   {color: "#678fcf"},
-  {color: "#cf8d67"}
+  {color: "#cf8d67"},
+  {color: "#F08080"},
+  {color: "#B03A2E"},
+  {color: "#2E86C1"},
+  {color: "#979A9A"},
+  {color: "#154360"},
+  {color: "#F7DC6F"},
+  {color: "#7B241C"}
 ];
 
 async function seedUsers() {

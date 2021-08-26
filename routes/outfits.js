@@ -129,43 +129,70 @@ router.delete("/:id", requireAuth, validateId("id"), (req, res, next) => {
 //route that generates the random outfit based on meteo and on color
 router.get("/generate", requireAuth, async (req, res, next) => {
 
-    const {
-        season
-    } = await getMeteo();
 
-    console.log(season)
 
-    const tops = await getUserItems(req.session.currentUser._id, "top", season); //We start by the top as base item for color random but could be anything
-    const bottoms = await getUserItems(req.session.currentUser._id, "bottom", season);
-    const shoes = await getUserItems(req.session.currentUser._id, "shoes", season);
-    // let randomIndex = Math.floor(Math.random() * tops.length);
-    // const top = tops[randomIndex];
+    try {
+        // const {
+        //     season
+        // } = await getMeteo();
+        const season ="warm"
+        // console.log(season)
+    
+        const tops = await  getUserItems(req.session.currentUser._id, "top", season); //We start by the top as base item for color random but could be anything
+        // console.log(tops)
 
-    if (!tops || !bottoms || !shoes) {
-        res.sendStatus(500)
-        return;
+        const bottoms = await getUserItems(req.session.currentUser._id, "bottom", season);
+        // console.log(bottoms)
+
+        const shoes = await  getUserItems(req.session.currentUser._id, "shoes", season);
+
+        // console.log(shoes)
+        // let randomIndex = Math.floor(Math.random() * tops.length);
+        // const top = tops[randomIndex];
+
+        if (!tops.length || !bottoms.length || !shoes.length) {
+            res.sendStatus(500)
+            return;
+        }
+        // console.log(tops, bottoms, shoes)
+
+        const randomIndex = Math.floor(Math.random() * tops.length);
+
+        // console.log(randomIndex)
+
+        const palette = await getRandomColorsHex([tops[randomIndex].color])
+
+        console.log(palette)
+
+        const top = await getRandomItemAndColor(tops, "top", palette)
+
+        const bottom = await getRandomItemAndColor(bottoms, "bottom", palette)
+        const shoe = await getRandomItemAndColor(shoes, "shoes", palette)
+
+        const finalColorPalette = palette
+
+
+
+        // const bottom = getRandomItemAndColor(bottoms, "bottom", await getRandomColorsHex([top.color]))
+        // const shoe = getRandomItemAndColor(shoes, "shoes",await getRandomColorsHex([top.color, bottom.color]))
+        // const finalColorPalette = await getRandomColorsHex([top.color, bottom.color, shoe.color])
+
+
+        const result = {
+            top,
+            bottom,
+            shoe,
+            finalColorPalette
+        }
+
+        // console.log(result)
+
+        res.status(200).json(result)
+
+    } catch (error) {
+        console.log(error)
+        res.sendStatus(500).json(error)
     }
-    // console.log(tops, bottoms, shoes)
-    const palette = await getRandomColorsHex()
-
-    const top  = getRandomItemAndColor(tops, "top", palette)
-    const bottom = getRandomItemAndColor(bottoms, "bottom", palette)
-    const shoe = getRandomItemAndColor(shoes, "shoes",palette)
-
-    console.log(top)
-
-
-    const finalColorPalette = palette//await getRandomColorsHex([top.color, bottom.color, shoe.color])
-
-    const result = {
-       top,
-       bottom,
-       shoe,
-       finalColorPalette
-    }
-
-    console.log("toto", result)
-    res.status(200).json(result)
 
 });
 
@@ -186,13 +213,17 @@ const getRandomItemAndColor = (items, category, paletteColors) => {
         return hexToRgbPaletteFormat(item.color)
     })
 
-    // console.log(itemsInPaletteColorsFormat, colorToSearch)
-
     const closestColorFoundRGB = colorDiff.closest(hexToRgbPaletteFormat(colorToSearch), itemsInPaletteColorsFormat)
 
     const closestColorFoundHex = rgbToHex(closestColorFoundRGB.R, closestColorFoundRGB.G, closestColorFoundRGB.B);
+    // console.log("closest", closestColorFoundHex, "toSearch", colorToSearch)
 
-    const filteredItems = items.filter((item) => item.color === closestColorFoundHex)
+    // console.log(items.map(item => {
+    //     return (item.color)
+    // }))
+
+    const filteredItems = items.filter((item) => item.color.toLowerCase() === closestColorFoundHex.toLowerCase() )
+
     const randomIndex = Math.floor(Math.random() * filteredItems.length);
     const item = filteredItems[randomIndex];
 
